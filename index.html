@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ethenet.com - Telephone Shop</title>
+    <style>
+        /* Your CSS styles here */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Telephone Shop</h1>
+        <div class="item" data-itemname="Polycom VVX501" data-itemprice="125">
+            <img src="adv2.png" alt="Polycom VVX501">
+            <h2>Polycom VVX501</h2>
+            <p>Price: £125 (incl. tax)</p>
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" min="1" max="40" value="1" oninput="handleQuantityChange()">
+            <button onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+    <div id="cart">
+        <h2>Cart</h2>
+        <ul id="cart-items">
+            <!-- Cart items will be added dynamically using JavaScript -->
+        </ul>
+        <p>Total: <span id="cart-total">£0.00</span></p>
+        <button onclick="checkout()">Checkout</button>
+    </div>
+    <p id="availability">Available Phones: 40</p>
+
+    <!-- Fields for first name, last name, street address, email, and phone number -->
+    <div id="customer-info">
+        <label for="first-name">First Name:</label>
+        <input type="text" id="first-name" value="firstname">
+
+        <label for="last-name">Last Name:</label>
+        <input type="text" id="last-name" value="lastname">
+
+        <label for="street-address">Street Address:</label>
+        <input type="text" id="street-address" value="address">
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" value="email">
+
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" value="phone">
+    </div>
+
+    <script>
+        let availablePhones = 40;
+        let cartTotal = 0;
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat("en-US", { style: "currency", currency: "GBP" }).format(value);
+        }
+
+        function handleQuantityChange() {
+            const quantityInput = document.getElementById("quantity");
+            if (quantityInput.value < 1) {
+                quantityInput.value = 1;
+            }
+        }
+
+        function updateCartTotal() {
+            const cartTotalElement = document.getElementById("cart-total");
+            cartTotalElement.textContent = `Total: ${formatCurrency(cartTotal)}`;
+        }
+
+        function addToCart() {
+            const cartItemsElement = document.getElementById("cart-items");
+            const itemElement = document.querySelector(".item");
+            const itemName = itemElement.getAttribute("data-itemname");
+            const itemPrice = parseInt(itemElement.getAttribute("data-itemprice"));
+            const quantityInput = document.getElementById("quantity");
+            let quantity = parseInt(quantityInput.value);
+
+            if (quantity > availablePhones) {
+                quantity = availablePhones;
+                alert("Insufficient stock. Adding maximum available quantity to cart.");
+            }
+
+            // Update available quantity
+            availablePhones -= quantity;
+            document.getElementById("availability").textContent = `Available Phones: ${availablePhones}`;
+
+            // Calculate item subtotal and update total
+            const itemSubtotal = itemPrice * quantity;
+            cartTotal += itemSubtotal;
+
+            // Create a new list item
+            const listItem = document.createElement("li");
+            const itemText = `${itemName} - ${formatCurrency(itemPrice)} x ${quantity} = ${formatCurrency(itemSubtotal)}`;
+            listItem.textContent = itemText;
+
+            // Create a remove button for the item
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.onclick = function () {
+                removeFromCart(listItem, quantity, itemSubtotal);
+            };
+            listItem.appendChild(removeButton);
+
+            // Add the item to the cart
+            cartItemsElement.appendChild(listItem);
+
+            // Update cart total
+            updateCartTotal();
+
+            // Clear the quantity input field after adding to cart
+            quantityInput.value = 1;
+        }
+
+        function removeFromCart(item, quantity, itemSubtotal) {
+            const cartItemsElement = document.getElementById("cart-items");
+            cartItemsElement.removeChild(item);
+
+            // Update available quantity after removing from cart
+            availablePhones += quantity;
+            document.getElementById("availability").textContent = `Available Phones: ${availablePhones}`;
+
+            // Update cart total after removing item
+            cartTotal -= itemSubtotal;
+            updateCartTotal();
+        }
+
+        function checkout() {
+            // Replace 'YOUR_HUBSPOT_FORM_ID' with the actual form ID in your HubSpot account
+            const hubspotFormId = '7fdbc696-359d-4f78-9326-eb5b8fda8b7f';
+
+            // Replace 'YOUR_HUBSPOT_PORTAL_ID' with your actual HubSpot portal ID
+            const hubspotPortalId = '140814038';
+
+            // Get the customer info
+            const firstName = document.getElementById("first-name").value;
+            const lastName = document.getElementById("last-name").value;
+            const streetAddress = document.getElementById("street-address").value;
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+
+            // Get the necessary data from the cart
+            const cartItemsElement = document.getElementById("cart-items");
+            const cartItems = cartItemsElement.querySelectorAll("li");
+
+            // Create an array to store the items data
+            const itemsData = [];
+
+            cartItems.forEach((item) => {
+                const itemText = item.textContent;
+                const itemName = itemText.split(" - ")[0];
+                const itemCost = parseFloat(itemText.match(/£(\d+\.\d+)/)[1]);
+                const itemAmount = parseInt(itemText.match(/x (\d+)/)[1]);
+                const itemData = {
+                    productname: itemName,
+                    cost: itemCost,
+                    amount: itemAmount,
+                };
+                itemsData.push(itemData);
+            });
+
+            // Create a form submission object with the data
+            const formSubmission = {
+                fields: [
+                    {
+                        name: 'productname',
+                        value: itemsData.map(item => item.productname).join(', ')
+                    },
+                    {
+                        name: 'cost',
+                        value: cartTotal.toFixed(2) // Format total price with 2 decimal places
+                    },
+                    {
+                        name: 'amount',
+                        value: JSON.stringify(itemsData)
+                    },
+                    {
+                        name: 'firstname',
+                        value: firstName
+                    },
+                    {
+                        name: 'lastname',
+                        value: lastName
+                    },
+                    {
+                        name: 'streetaddress',
+                        value: streetAddress
+                    },
+                    {
+                        name: 'email',
+                        value: email
+                    },
+                    {
+                        name: 'phone',
+                        value: phone
+                    }
+                ]
+            };
+
+            // Perform a POST request to submit the data to the HubSpot form
+            fetch(`https://api.hsforms.com/submissions/v3/integration/submit/${hubspotPortalId}/${hubspotFormId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formSubmission),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Checkout successful!'); // Replace this with your desired success message
+                } else {
+                    response.json().then(data => {
+                        console.error('Error response from HubSpot:', data);
+                        alert('Checkout failed. Please try again later.'); // Replace this with your desired error message
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting form data:', error);
+                alert('An error occurred. Please try again later.'); // Replace this with your desired error message
+            });
+        }
+    </script>
+</body>
+</html>

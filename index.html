@@ -3,14 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ethenet.com - Telephone Shop</title>
+    <title>ethenet.com</title>
     <style>
-        /* Your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .item {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .item img {
+            max-width: 100%;
+            display: block;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .item h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .item p {
+            margin: 10px 0;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            padding: 5px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #cart {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #cart h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        #cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        #cart-items li {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #cart-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        #customer-info {
+            margin-top: 20px;
+        }
+
+        #customer-info label {
+            margin-right: 10px;
+        }
+
+        #customer-info input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 5px;
+        }
+
+        .success-message {
+            color: green;
+            margin-top: 5px;
+        }
+
+        .topinfo {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Telephone Shop</h1>
+        <div class="topinfo">
+        <h1>ethenet.com</h1>
+        <a href="hosted.ethenet.com"><p>Hosted VoIP from Just £6</p></a>
+        <br>
+        </div>
         <div class="item" data-itemname="Polycom VVX501" data-itemprice="125">
             <img src="adv2.png" alt="Polycom VVX501">
             <h2>Polycom VVX501</h2>
@@ -26,27 +155,33 @@
             <!-- Cart items will be added dynamically using JavaScript -->
         </ul>
         <p>Total: <span id="cart-total">£0.00</span></p>
+
+        <div id="customer-info">
+            <h2>Customer Information</h2><br>
+            <label for="first-name">First Name:</label>
+            <input type="text" id="first-name" placeholder="Enter your first name">
+    
+            <label for="last-name">Last Name:</label>
+            <input type="text" id="last-name" placeholder="Enter your last name">
+    
+            <label for="street-address">Street Address:</label>
+            <input type="text" id="street-address" placeholder="Enter your street address">
+    
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter your email address">
+    
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" placeholder="Enter your phone number">
+        </div>
+
         <button onclick="checkout()">Checkout</button>
+<p>After you have finished placing your order, a member of our team will get in touch with you via phone or email to arrange payment. As soon as we receive the payment, we will proceed to ship the item to your specified address.</p>
+        
     </div>
     <p id="availability">Available Phones: 40</p>
 
     <!-- Fields for first name, last name, street address, email, and phone number -->
-    <div id="customer-info">
-        <label for="first-name">First Name:</label>
-        <input type="text" id="first-name" value="firstname">
-
-        <label for="last-name">Last Name:</label>
-        <input type="text" id="last-name" value="lastname">
-
-        <label for="street-address">Street Address:</label>
-        <input type="text" id="street-address" value="address">
-
-        <label for="email">Email:</label>
-        <input type="email" id="email" value="email">
-
-        <label for="phone">Phone Number:</label>
-        <input type="tel" id="phone" value="phone">
-    </div>
+    
 
     <script>
         let availablePhones = 40;
